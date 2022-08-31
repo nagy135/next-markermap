@@ -1,4 +1,6 @@
-import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
+import { TGetRecordsResponse } from "@ctypes/response";
+import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
+import getRecords from "../services/internal/api/get-records";
 import { useState, useCallback, memo } from "react";
 import { defaultMapCenter, defaultZoom } from "../constants";
 import Profile from "./profile";
@@ -9,6 +11,7 @@ const containerStyle = {
 };
 
 function MapComponent() {
+  const [records, setRecords] = useState<TGetRecordsResponse>([]);
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -18,6 +21,7 @@ function MapComponent() {
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
+    getRecords().then((response) => setRecords(response));
   }, []);
 
   const onUnmount = useCallback(() => {
@@ -35,8 +39,11 @@ function MapComponent() {
           onLoad={onLoad}
           onUnmount={onUnmount}
         >
-          {/* Child components, such as markers, info windows, etc. */}
-          <></>
+          <>
+            {records.map((e) => (
+              <MarkerF title={e.name} position={{ lat: e.lat, lng: e.lon }} />
+            ))}
+          </>
         </GoogleMap>
       ) : (
         <div>loading ...</div>
