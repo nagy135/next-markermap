@@ -12,9 +12,9 @@ export default function Login() {
     )
   }
   return (
-    <div className="container mx-auto max-w-xl mt-4 flex flex-col">
-      <h1 className="text-6xl mb-5">Welcome</h1>
-      <button className="btn btn-primary" onClick={() => signIn()}>Sign in</button>
+    <div className="container mt-[30vh] mx-auto max-w-xl flex flex-col">
+      <h1 className="text-6xl font-extrabold mb-5 text-center">Welcome</h1>
+      <button className="btn btn-accent shadow-lg max-w-sm" onClick={() => signIn()}>Sign in</button>
     </div>
   )
 }
