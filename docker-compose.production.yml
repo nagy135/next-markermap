@@ -7,7 +7,7 @@ services:
     volumes:
       - next-markermap-database:/var/lib/postgresql/data
     ports:
-      - "127.0.0.1:4220:5432"
+      - "127.0.0.1:4221:5432"
     env_file: ./env/.env.postgres
 
   # APP
