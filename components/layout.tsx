@@ -18,10 +18,10 @@ const Layout: React.FC<ILayout> = ({ children }) => {
           type="text/css"
         />
         <script src="https://cdn.tailwindcss.com" defer></script>
-        <title>Reminder</title>
+        <title>MarkerMap</title>
         <meta
           name="description"
-          content="Reminds you about stuff you forget!"
+          content="View mountain achievements of your friends"
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
