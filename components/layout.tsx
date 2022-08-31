@@ -2,7 +2,6 @@ import Head from "next/head";
 import React from "react";
 import { useMockSession } from "../hooks/session-mock";
 import Login from "./login";
-import styles from "../styles/Home.module.css";
 
 interface ILayout {
   children?: JSX.Element;
@@ -26,7 +25,7 @@ const Layout: React.FC<ILayout> = ({ children }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>{!session ? <Login /> : children}</main>
+      <main>{!session ? <Login /> : children}</main>
     </div>
   );
 };
