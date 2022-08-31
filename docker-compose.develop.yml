@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+
+  # DATABASE
+  postgres:
+    image: postgres:13.1
+    volumes:
+      - next-markermap-database:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:4220:5432"
+    env_file: ./env/.env.postgres
+
+  # APP
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3111:3000"
+      - "5111:5555"
+    env_file: ./env/.env.app
+    stdin_open: true
+
+volumes:
+  next-markermap-database:
+    name: next-markermap-database
