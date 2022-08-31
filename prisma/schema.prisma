@@ -2,10 +2,33 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Record {
+    id          Int      @id @default(autoincrement())
+    name        String   @db.VarChar(255)
+    description String   @db.Text()
+    userEmail   String   @db.VarChar(255)
+    lat         Float    @db.DoublePrecision()
+    lon         Float    @db.DoublePrecision()
+    alt         Int      @db.Integer()
+    images      Image[]
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model Image {
+    id        Int      @id @default(autoincrement())
+    name      String?  @db.VarChar(255)
+    path      String   @db.VarChar(255)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Record    Record   @relation(fields: [recordId], references: [id])
+    recordId  Int
 }
