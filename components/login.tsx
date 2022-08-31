@@ -12,7 +12,7 @@ export default function Login() {
     )
   }
   return (
-    <div className="flex flex-col">
+    <div className="container mx-auto max-w-xl mt-4 flex flex-col">
       <h1 className="text-6xl mb-5">Welcome</h1>
       <button className="btn btn-primary" onClick={() => signIn()}>Sign in</button>
     </div>

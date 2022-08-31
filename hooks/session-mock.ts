@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 
-const isMockLoggedIn = false;
+const isMockLoggedIn = true;
 export function useMockSession() {
   if (process.env.NEXT_PUBLIC_ENV === "production") return useSession();
   else {
