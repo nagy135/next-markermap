@@ -32,6 +32,11 @@ function MapComponent() {
   // states {{{
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [addingMode, setAddingMode] = useState(false);
+  const [addRecordModalOpen, setAddRecordModalOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
   // }}}
 
   // handlers {{{
@@ -43,23 +48,21 @@ function MapComponent() {
     setMap(null);
   }, []);
 
-  const toggleAddingMode = () => {
+  const toggleAddingMode = (open?: boolean) => {
+    const newState = open ?? !addingMode;
     map?.setOptions({
-      draggableCursor: addingMode ? "default" : "crosshair",
+      draggableCursor: newState ? "crosshair" : "default",
     });
-    setAddingMode(!addingMode);
+    setAddingMode(newState);
   };
 
-  const mapClick = (e: google.maps.MapMouseEvent) => {
-    if (!addingMode) return;
-    const lat = e.latLng?.lat();
-    const lon = e.latLng?.lng();
-    if (!lat || !lon) return;
-    toggleAddingMode();
+  const handleCreateNewRecord = () => {
+    if (!selectedLocation) return;
+    setAddRecordModalOpen(false);
     mutation.mutate(
       {
-        lat,
-        lon,
+        lat: selectedLocation.lat,
+        lon: selectedLocation.lon,
         alt: 0,
         name: "test",
         description: "",
@@ -69,6 +72,19 @@ function MapComponent() {
         onSuccess: () => queryClient.invalidateQueries(["records"]),
       }
     );
+  };
+
+  const mapClick = (e: google.maps.MapMouseEvent) => {
+    if (!addingMode) return;
+    const lat = e.latLng?.lat();
+    const lon = e.latLng?.lng();
+    if (!lat || !lon) return;
+    toggleAddingMode(false);
+    setSelectedLocation({
+      lat,
+      lon,
+    });
+    setAddRecordModalOpen(true);
   };
   // }}}
 
@@ -98,6 +114,30 @@ function MapComponent() {
       ) : (
         <div>loading ...</div>
       )}
+      <label htmlFor="add-record-modal" className="btn modal-button hidden">
+        open modal
+      </label>
+      <input
+        type="checkbox"
+        id="add-record-modal"
+        className="modal-toggle"
+        readOnly
+        checked={addRecordModalOpen}
+      />
+      <div className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Add new record</h3>
+          <div className="modal-action">
+            <label
+              htmlFor="add-record-modal"
+              className="btn"
+              onClick={handleCreateNewRecord}
+            >
+              Create
+            </label>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
