@@ -1,9 +1,10 @@
-import { TGetRecordsResponse } from "@ctypes/response";
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import getRecords from "../services/internal/api/get-records";
 import { useState, useCallback, memo } from "react";
 import { defaultMapCenter, defaultZoom } from "../constants";
 import Profile from "./profile";
+import { useQuery } from "@tanstack/react-query";
+import RecordAdder from "./record-adder";
 
 const containerStyle = {
   width: "100vw",
@@ -11,7 +12,7 @@ const containerStyle = {
 };
 
 function MapComponent() {
-  const [records, setRecords] = useState<TGetRecordsResponse>([]);
+  const { data: records} = useQuery(['records'], () => getRecords())
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -21,7 +22,6 @@ function MapComponent() {
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
-    getRecords().then((response) => setRecords(response));
   }, []);
 
   const onUnmount = useCallback(() => {
@@ -30,6 +30,7 @@ function MapComponent() {
 
   return (
     <>
+      <RecordAdder />
       <Profile />
       {isLoaded ? (
         <GoogleMap
@@ -40,8 +41,8 @@ function MapComponent() {
           onUnmount={onUnmount}
         >
           <>
-            {records.map((e) => (
-              <MarkerF title={e.name} position={{ lat: e.lat, lng: e.lon }} />
+            {records?.map((e, i) => (
+              <MarkerF key={`marker-${i}`} title={e.name} position={{ lat: e.lat, lng: e.lon }} />
             ))}
           </>
         </GoogleMap>
