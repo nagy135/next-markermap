@@ -14,6 +14,17 @@ const containerStyle = {
   height: "100vh",
 };
 
+type TNewRecordData = {
+  name: string;
+  description: string;
+  alt: number;
+};
+const newRecordDataDefault: TNewRecordData = {
+  name: "",
+  description: "",
+  alt: 0,
+};
+
 function MapComponent() {
   // hooks {{{
   const queryClient = useQueryClient();
@@ -33,6 +44,8 @@ function MapComponent() {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [addingMode, setAddingMode] = useState(false);
   const [addRecordModalOpen, setAddRecordModalOpen] = useState(false);
+  const [newRecordData, setNewRecordData] =
+    useState<TNewRecordData>(newRecordDataDefault);
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lon: number;
@@ -48,6 +61,18 @@ function MapComponent() {
     setMap(null);
   }, []);
 
+  const updateNewRecordData = (
+    key: keyof TNewRecordData,
+    value: string | number
+  ) => {
+    setNewRecordData((previous) => {
+      return {
+        ...previous,
+        [key]: key === "alt" ? Number(value) : value,
+      };
+    });
+  };
+
   const toggleAddingMode = (open?: boolean) => {
     const newState = open ?? !addingMode;
     map?.setOptions({
@@ -57,15 +82,16 @@ function MapComponent() {
   };
 
   const handleCreateNewRecord = () => {
-    if (!selectedLocation) return;
+    if (!selectedLocation || !newRecordData) return;
     setAddRecordModalOpen(false);
+    setNewRecordData(newRecordDataDefault);
     mutation.mutate(
       {
         lat: selectedLocation.lat,
         lon: selectedLocation.lon,
-        alt: 0,
-        name: "test",
-        description: "",
+        alt: newRecordData.alt,
+        name: newRecordData.name,
+        description: newRecordData.description,
         email: session!.user!.email!, // TODO: this should be always present at this stage, verify!
       },
       {
@@ -125,8 +151,49 @@ function MapComponent() {
         checked={addRecordModalOpen}
       />
       <div className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Add new record</h3>
+        <div className="modal-box relative">
+          <label
+            htmlFor="my-modal-3"
+            onClick={() => setAddRecordModalOpen(false)}
+            className="btn btn-sm btn-error btn-circle absolute right-2 top-2"
+          >
+            ✕
+          </label>
+          <h3 className="font-bold text-lg text-center">Add new record</h3>
+          <div className="form-control">
+            <label className="input-group">
+              <span>Altitude</span>
+              <input
+                type="number"
+                placeholder="0"
+                className="input input-bordered w-[100%]"
+                value={newRecordData.alt}
+                onChange={(e) => updateNewRecordData("alt", e.target.value)}
+              />
+            </label>
+            <label className="input-group mt-3">
+              <span>Name</span>
+              <input
+                type="text"
+                placeholder="Name"
+                className="input input-bordered w-[100%]"
+                value={newRecordData.name}
+                onChange={(e) => updateNewRecordData("name", e.target.value)}
+              />
+            </label>
+            <label className="input-group mt-3">
+              <span>Description</span>
+              <input
+                type="text"
+                placeholder=""
+                className="input input-bordered w-[100%]"
+                value={newRecordData.description}
+                onChange={(e) =>
+                  updateNewRecordData("description", e.target.value)
+                }
+              />
+            </label>
+          </div>
           <div className="modal-action">
             <label
               htmlFor="add-record-modal"
