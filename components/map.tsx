@@ -1,6 +1,7 @@
 import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import getRecords from "../services/internal/api/get-records";
 import postRecord from "../services/internal/api/post-record";
+import postImageToRecord from "../services/internal/api/post-image-to-record";
 import { useState, useCallback, memo } from "react";
 import { defaultMapCenter, defaultZoom } from "../constants";
 import Profile from "./profile";
@@ -32,6 +33,9 @@ function MapComponent() {
   const mutation = useMutation((newRecord: TPostRecordRequest) =>
     postRecord(newRecord)
   );
+  const imageMutation = useMutation((both: { id: number; data: FormData }) =>
+    postImageToRecord(both.id, both.data)
+  );
   const { data: session } = useMockSession();
 
   const { isLoaded } = useJsApiLoader({
@@ -43,13 +47,17 @@ function MapComponent() {
   // states {{{
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [addingMode, setAddingMode] = useState(false);
+  const [addImage, setAddImage] = useState(false);
   const [addRecordModalOpen, setAddRecordModalOpen] = useState(false);
+  const [addImageToRecordModalOpen, setAddImageToRecordModalOpen] =
+    useState(false);
   const [newRecordData, setNewRecordData] =
     useState<TNewRecordData>(newRecordDataDefault);
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lon: number;
   } | null>(null);
+  const [image, setImage] = useState<File | null>(null);
   // }}}
 
   // handlers {{{
@@ -95,9 +103,28 @@ function MapComponent() {
         email: session!.user!.email!, // TODO: this should be always present at this stage, verify!
       },
       {
-        onSuccess: () => queryClient.invalidateQueries(["records"]),
+        onSuccess: () => {
+          queryClient.invalidateQueries(["records"]);
+          if (addImage) setAddImageToRecordModalOpen(true);
+        },
       }
     );
+  };
+
+  const handleAddImageToRecord = () => {
+    if (!image) {
+      alert("no image selected");
+      return;
+    }
+    if (!mutation.data?.id) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append("image", image);
+    imageMutation.mutate({
+      id: mutation.data.id,
+      data: formData,
+    });
   };
 
   const mapClick = (e: google.maps.MapMouseEvent) => {
@@ -140,9 +167,6 @@ function MapComponent() {
       ) : (
         <div>loading ...</div>
       )}
-      <label htmlFor="add-record-modal" className="btn modal-button hidden">
-        open modal
-      </label>
       <input
         type="checkbox"
         id="add-record-modal"
@@ -193,6 +217,15 @@ function MapComponent() {
                 }
               />
             </label>
+            <label className="label cursor-pointer">
+              <span className="label-text">Add Image</span>
+              <input
+                type="checkbox"
+                defaultChecked={false}
+                onChange={() => setAddImage((prev) => !prev)}
+                className="checkbox"
+              />
+            </label>
           </div>
           <div className="modal-action">
             <label
@@ -201,6 +234,43 @@ function MapComponent() {
               onClick={handleCreateNewRecord}
             >
               Create
+            </label>
+          </div>
+        </div>
+      </div>
+      <input
+        type="checkbox"
+        id="add-image-modal"
+        className="modal-toggle"
+        readOnly
+        checked={addImageToRecordModalOpen}
+      />
+      <div className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box relative">
+          <label
+            htmlFor="my-modal-3"
+            onClick={() => setAddImageToRecordModalOpen(false)}
+            className="btn btn-sm btn-error btn-circle absolute right-2 top-2"
+          >
+            ✕
+          </label>
+          <h3 className="font-bold text-lg text-center">Add image to record</h3>
+          <div className="form-control">
+            <label className="input-group mt-3">
+              <input
+                type="file"
+                className="input pl-0"
+                onChange={(e) => setImage(e.target.files![0])}
+              />
+            </label>
+          </div>
+          <div className="modal-action">
+            <label
+              htmlFor="add-record-modal"
+              className="btn"
+              onClick={handleAddImageToRecord}
+            >
+              Add
             </label>
           </div>
         </div>
