@@ -1,5 +1,6 @@
 import Head from "next/head";
-import React from "react";
+import React, { useContext } from "react";
+import { GuestContext } from "../contexts/guest-context";
 import { useMockSession } from "../hooks/session-mock";
 import Login from "./login";
 
@@ -9,6 +10,7 @@ interface ILayout {
 
 const Layout: React.FC<ILayout> = ({ children }) => {
   const { data: session } = useMockSession();
+  const { guest } = useContext(GuestContext);
   return (
     <div>
       <Head>
@@ -25,7 +27,7 @@ const Layout: React.FC<ILayout> = ({ children }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>{!session ? <Login /> : children}</main>
+      <main>{!session && !guest ? <Login /> : children}</main>
     </div>
   );
 };
