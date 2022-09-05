@@ -9,7 +9,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import RecordAdder from "./record-adder";
 import { TPostRecordRequest } from "@ctypes/request";
 import { useMockSession } from "../hooks/session-mock";
-import ImagePreview from "./image-preview";
+import RecordPreview from "./record-preview";
+import { RecordWithImages } from "@ctypes/response";
 
 const containerStyle = {
   width: "100vw",
@@ -62,7 +63,9 @@ function MapComponent() {
 
   // imagePreview
   const [imagePreviewMode, setImagePreviewMode] = useState(false);
-  const [previewImageUrls, setPreviewImageUrls] = useState<string[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<RecordWithImages | null>(
+    null
+  );
   // }}}
 
   // handlers {{{
@@ -136,8 +139,8 @@ function MapComponent() {
           queryClient.invalidateQueries(["records"]);
         },
         onError: (error) => {
-          if (error instanceof Error) alert('error: ' + error.message);
-        }
+          if (error instanceof Error) alert("error: " + error.message);
+        },
       }
     );
     setAddImageToRecordModalOpen(false);
@@ -156,15 +159,9 @@ function MapComponent() {
     setAddRecordModalOpen(true);
   };
 
-  const markerClick = (recordId: number, imageUrls: string[]) => {
-    console.log(
-      "================\n",
-      "showing record: ",
-      recordId,
-      "\n================"
-    );
+  const markerClick = (record: RecordWithImages) => {
     setImagePreviewMode(true);
-    setPreviewImageUrls(imageUrls);
+    setSelectedRecord(record);
   };
   // }}}
 
@@ -184,12 +181,7 @@ function MapComponent() {
           <>
             {records?.map((e, i) => (
               <MarkerF
-                onClick={() =>
-                  markerClick(
-                    e.id,
-                    e.images.map((e) => e.path)
-                  )
-                }
+                onClick={() => markerClick(e)}
                 key={`marker-${i}`}
                 title={e.name}
                 position={{ lat: e.lat, lng: e.lon }}
@@ -308,10 +300,10 @@ function MapComponent() {
           </div>
         </div>
       </div>
-      <ImagePreview
+      <RecordPreview
         open={imagePreviewMode}
         toggleOpen={setImagePreviewMode}
-        imageUrls={previewImageUrls}
+        record={selectedRecord}
       />
     </>
   );
