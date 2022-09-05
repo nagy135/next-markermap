@@ -39,3 +39,4 @@ env/.env.postgres
 env/.env.app
 
 docker-compose.yml
+public
