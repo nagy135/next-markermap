@@ -1,3 +1,4 @@
+import { MouseEvent, useRef } from "react";
 interface IImagePreview {
   open: boolean;
   toggleOpen: (state: boolean) => void;
@@ -9,19 +10,23 @@ const ImagePreview: React.FC<IImagePreview> = ({
   toggleOpen,
   imageUrls,
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const clickedAround = (e: MouseEvent<HTMLElement>) => {
+    if (e.target == modalRef.current) toggleOpen(false);
+  };
   return (
-    <>
+    <div onClick={(e) => clickedAround(e)}>
       <input
         type="checkbox"
-        id="add-image-modal"
+        id="show-image-modal"
         className="modal-toggle"
         readOnly
         checked={open}
       />
-      <div className="modal modal-bottom sm:modal-middle">
+      <div ref={modalRef} className="modal modal-bottom sm:modal-middle">
         <div className="modal-box relative">
           <label
-            htmlFor="my-modal-3"
+            htmlFor="show-image-modal"
             onClick={() => toggleOpen(false)}
             className="btn btn-sm btn-error btn-circle absolute right-2 top-2"
           >
@@ -29,11 +34,13 @@ const ImagePreview: React.FC<IImagePreview> = ({
           </label>
           <h3 className="font-bold text-lg text-center">Image</h3>
           {imageUrls
-            ? imageUrls.map((e, i) => <img src={e} key={`image-${i}`} alt={`image-${i}`} />)
+            ? imageUrls.map((e, i) => (
+                <img src={e} key={`image-${i}`} alt={`image-${i}`} />
+              ))
             : null}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
