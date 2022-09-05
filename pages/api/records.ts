@@ -26,6 +26,9 @@ const get = async (res: NextApiResponse, data: TGetRecordsRequest) => {
   if (data.email) where.userEmail = data.email;
   const records = await prisma.record.findMany({
     where,
+    include: {
+      images: true
+    }
   });
   return res.status(200).json(records);
 };

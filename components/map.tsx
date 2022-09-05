@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import RecordAdder from "./record-adder";
 import { TPostRecordRequest } from "@ctypes/request";
 import { useMockSession } from "../hooks/session-mock";
+import ImagePreview from "./image-preview";
 
 const containerStyle = {
   width: "100vw",
@@ -58,6 +59,10 @@ function MapComponent() {
     lon: number;
   } | null>(null);
   const [image, setImage] = useState<File | null>(null);
+
+  // imagePreview
+  const [imagePreviewMode, setImagePreviewMode] = useState(false);
+  const [previewImageUrls, setPreviewImageUrls] = useState<string[]>([]);
   // }}}
 
   // handlers {{{
@@ -139,6 +144,10 @@ function MapComponent() {
     });
     setAddRecordModalOpen(true);
   };
+
+  const markerClick = (recordId: number) => {
+    setImagePreviewMode(true);
+  };
   // }}}
 
   return (
@@ -157,6 +166,7 @@ function MapComponent() {
           <>
             {records?.map((e, i) => (
               <MarkerF
+                onClick={() => markerClick(e.id)}
                 key={`marker-${i}`}
                 title={e.name}
                 position={{ lat: e.lat, lng: e.lon }}
@@ -275,6 +285,11 @@ function MapComponent() {
           </div>
         </div>
       </div>
+      <ImagePreview
+        open={imagePreviewMode}
+        toggleOpen={setImagePreviewMode}
+        imageUrls={previewImageUrls}
+      />
     </>
   );
 }
