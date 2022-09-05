@@ -32,6 +32,7 @@ const saveFile = async (files: File | File[]): Promise<string> => {
 
 const post = async (req: NextApiRequest, res: NextApiResponse) => {
   const { recordId: recordIdRaw } = req.query;
+  console.log("================\n", "uploading image to record: ", recordIdRaw, "\n================");
   if (!recordIdRaw) return res.status(400).send("recordId is required!");
   const recordId = Array.isArray(recordIdRaw) ? recordIdRaw[0] : recordIdRaw;
   const form = new formidable.IncomingForm();
@@ -58,6 +59,7 @@ const post = async (req: NextApiRequest, res: NextApiResponse) => {
         resolve("added");
       });
     });
+    console.log("================\n", "responseMsg: ", responseMsg, "\n================");
     return res.status(201).send({ msg: responseMsg });
   } catch (error) {
     return res.status(400).send({ msg: "" });
