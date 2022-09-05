@@ -126,10 +126,18 @@ function MapComponent() {
     }
     const formData = new FormData();
     formData.append("image", image);
-    imageMutation.mutate({
-      id: mutation.data.id,
-      data: formData,
-    });
+    imageMutation.mutate(
+      {
+        id: mutation.data.id,
+        data: formData,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["records"]);
+        },
+      }
+    );
+    setAddImageToRecordModalOpen(false);
   };
 
   const mapClick = (e: google.maps.MapMouseEvent) => {
@@ -145,8 +153,15 @@ function MapComponent() {
     setAddRecordModalOpen(true);
   };
 
-  const markerClick = (recordId: number) => {
+  const markerClick = (recordId: number, imageUrls: string[]) => {
+    console.log(
+      "================\n",
+      "showing record: ",
+      recordId,
+      "\n================"
+    );
     setImagePreviewMode(true);
+    setPreviewImageUrls(imageUrls);
   };
   // }}}
 
@@ -166,7 +181,12 @@ function MapComponent() {
           <>
             {records?.map((e, i) => (
               <MarkerF
-                onClick={() => markerClick(e.id)}
+                onClick={() =>
+                  markerClick(
+                    e.id,
+                    e.images.map((e) => e.path)
+                  )
+                }
                 key={`marker-${i}`}
                 title={e.name}
                 position={{ lat: e.lat, lng: e.lon }}

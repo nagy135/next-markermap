@@ -29,7 +29,7 @@ const ImagePreview: React.FC<IImagePreview> = ({
           </label>
           <h3 className="font-bold text-lg text-center">Image</h3>
           {imageUrls
-            ? imageUrls.map((e, i) => <img src={e} alt={`image-${i}`} />)
+            ? imageUrls.map((e, i) => <img src={e} key={`image-${i}`} alt={`image-${i}`} />)
             : null}
         </div>
       </div>
