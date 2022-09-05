@@ -24,7 +24,7 @@ export default async function handler(
 const saveFile = async (files: File | File[]): Promise<string> => {
   const file: File = Array.isArray(files) ? files[0] : files;
   const data = fs.readFileSync(file.filepath);
-  const path = `${file.originalFilename}`;
+  const path = `${(new Date).getTime()}-${file.originalFilename}`;
   fs.writeFileSync(`./public/${path}`, data);
   fs.unlinkSync(file.filepath);
   return path;
