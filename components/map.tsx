@@ -135,6 +135,9 @@ function MapComponent() {
         onSuccess: () => {
           queryClient.invalidateQueries(["records"]);
         },
+        onError: (error) => {
+          if (error instanceof Error) alert('error: ' + error.message);
+        }
       }
     );
     setAddImageToRecordModalOpen(false);
