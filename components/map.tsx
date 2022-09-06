@@ -160,8 +160,8 @@ function MapComponent() {
   };
 
   const markerClick = (record: RecordWithImages) => {
-    setImagePreviewMode(true);
     setSelectedRecord(record);
+    setImagePreviewMode(true);
   };
   // }}}
 
