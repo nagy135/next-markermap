@@ -160,6 +160,7 @@ function MapComponent() {
   };
 
   const markerClick = (record: RecordWithImages) => {
+    setSelectedRecord(null);
     setSelectedRecord(record);
     setImagePreviewMode(true);
   };
