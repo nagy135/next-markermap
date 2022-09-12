@@ -1,5 +1,5 @@
 export type TGetRecordsRequest = {
-  email?: string;
+  email?: string[];
 };
 
 export type TPostRecordRequest = {

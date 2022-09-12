@@ -7,7 +7,7 @@ import { defaultMapCenter, defaultZoom } from "../constants";
 import Profile from "./profile";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import RecordAdder from "./record-adder";
-import { TPostRecordRequest } from "@ctypes/request";
+import { TGetRecordsRequest, TPostRecordRequest } from "@ctypes/request";
 import { useMockSession } from "../hooks/session-mock";
 import RecordPreview from "./record-preview";
 import { RecordWithImages } from "@ctypes/response";
@@ -23,6 +23,7 @@ type TNewRecordData = {
   description: string;
   alt: number;
 };
+
 const newRecordDataDefault: TNewRecordData = {
   name: "",
   description: "",
@@ -32,7 +33,7 @@ const newRecordDataDefault: TNewRecordData = {
 function MapComponent() {
   // hooks {{{
   const queryClient = useQueryClient();
-  const { data: records } = useQuery(["records"], () => getRecords());
+  const { data: records } = useQuery(["records"], () => getRecords(filters));
   const mutation = useMutation((newRecord: TPostRecordRequest) =>
     postRecord(newRecord)
   );
@@ -63,6 +64,9 @@ function MapComponent() {
   } | null>(null);
   const [image, setImage] = useState<File | null>(null);
 
+  // filter
+  const [filters, setFilters] = useState<TGetRecordsRequest>({});
+
   // imagePreview
   const [imagePreviewMode, setImagePreviewMode] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<RecordWithImages | null>(
@@ -91,6 +95,8 @@ function MapComponent() {
     });
   };
 
+  const invalidateRecords = () => queryClient.invalidateQueries(['records']);
+
   const toggleFilterMode = (open?: boolean) => {
     setFilterModalOpen(open ?? !filterModalOpen);
   };
@@ -118,7 +124,7 @@ function MapComponent() {
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries(["records"]);
+          invalidateRecords();
           if (addImage) setAddImageToRecordModalOpen(true);
         },
       }
@@ -142,7 +148,7 @@ function MapComponent() {
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries(["records"]);
+          invalidateRecords();
         },
         onError: (error) => {
           if (error instanceof Error) alert("error: " + error.message);
@@ -314,7 +320,13 @@ function MapComponent() {
         toggleOpen={setImagePreviewMode}
         record={selectedRecord}
       />
-      <Filter open={filterModalOpen} toggleOpen={toggleFilterMode} />
+      <Filter
+        open={filterModalOpen}
+        toggleOpen={toggleFilterMode}
+        filters={filters}
+        setFilters={setFilters}
+        invalidateRecords={invalidateRecords}
+      />
     </>
   );
 }

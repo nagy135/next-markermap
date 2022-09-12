@@ -9,7 +9,7 @@ export function useMockSession(): SessionContextValue {
           data: {
             user: {
               name: "nagy135",
-              email: "lul@lul.sk",
+              email: "test@test.sk",
               image: "https://avatars.githubusercontent.com/u/11056512?v=4",
             },
             expires: "never",

@@ -10,7 +10,14 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      return await get(res, req.query as TGetRecordsRequest);
+      const data: TGetRecordsRequest = {};
+      if (req.query.email) {
+        const emailArr = Array.isArray(req.query.email)
+          ? req.query.email
+          : [req.query.email];
+        data.email = emailArr;
+      }
+      return await get(res, data);
     case "POST":
       return await post(res, {
         ...req.body,
@@ -23,12 +30,16 @@ export default async function handler(
 
 const get = async (res: NextApiResponse, data: TGetRecordsRequest) => {
   const where: Prisma.RecordWhereInput = {};
-  if (data.email) where.userEmail = data.email;
+
+  if (data.email) {
+    where.userEmail = { in: data.email };
+  }
+
   const records = await prisma.record.findMany({
     where,
     include: {
-      images: true
-    }
+      images: true,
+    },
   });
   return res.status(200).json(records);
 };
