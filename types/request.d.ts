@@ -10,3 +10,5 @@ export type TPostRecordRequest = {
   lon: number;
   alt: number;
 };
+
+export type TGetUsersRequest = {};

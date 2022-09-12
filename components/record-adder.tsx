@@ -11,7 +11,7 @@ const RecordAdder: FC<IRecordAdder> = ({ addingMode, toggleAddingMode }) => {
   if (!session) return null;
   return (
     <button
-      className={`absolute right-1 top-1/2 z-50 btn btn-circle ${
+      className={`btn btn-circle m-1 ${
         addingMode ? "btn-error" : ""
       }`}
       onClick={() => toggleAddingMode()}

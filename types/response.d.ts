@@ -4,3 +4,4 @@ type RecordWithImages = Prisma.RecordGetPayload<{ include: { images: true } }>;
 
 export type TPostRecordResponse = Record;
 export type TGetRecordsResponse = RecordWithImages[];
+export type TGetUsersResponse = string[];

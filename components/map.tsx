@@ -11,6 +11,7 @@ import { TPostRecordRequest } from "@ctypes/request";
 import { useMockSession } from "../hooks/session-mock";
 import RecordPreview from "./record-preview";
 import { RecordWithImages } from "@ctypes/response";
+import Filter, { FilterButton } from "./filter";
 
 const containerStyle = {
   width: "100vw",
@@ -53,6 +54,7 @@ function MapComponent() {
   const [addRecordModalOpen, setAddRecordModalOpen] = useState(false);
   const [addImageToRecordModalOpen, setAddImageToRecordModalOpen] =
     useState(false);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [newRecordData, setNewRecordData] =
     useState<TNewRecordData>(newRecordDataDefault);
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -87,6 +89,10 @@ function MapComponent() {
         [key]: key === "alt" ? Number(value) : value,
       };
     });
+  };
+
+  const toggleFilterMode = (open?: boolean) => {
+    setFilterModalOpen(open ?? !filterModalOpen);
   };
 
   const toggleAddingMode = (open?: boolean) => {
@@ -167,7 +173,10 @@ function MapComponent() {
 
   return (
     <>
-      <RecordAdder {...{ addingMode, toggleAddingMode }} />
+      <div className="absolute right-1 top-1/2 z-50 flex flex-col">
+        <RecordAdder {...{ addingMode, toggleAddingMode }} />
+        <FilterButton open={filterModalOpen} toggleOpen={toggleFilterMode} />
+      </div>
       <Profile />
       {isLoaded ? (
         <GoogleMap
@@ -202,7 +211,7 @@ function MapComponent() {
       <div className="modal modal-bottom sm:modal-middle">
         <div className="modal-box relative">
           <label
-            htmlFor="my-modal-3"
+            htmlFor="add-record-modal"
             onClick={() => setAddRecordModalOpen(false)}
             className="btn btn-sm btn-error btn-circle absolute right-2 top-2"
           >
@@ -273,7 +282,7 @@ function MapComponent() {
       <div className="modal modal-bottom sm:modal-middle">
         <div className="modal-box relative">
           <label
-            htmlFor="my-modal-3"
+            htmlFor="add-image-modal"
             onClick={() => setAddImageToRecordModalOpen(false)}
             className="btn btn-sm btn-error btn-circle absolute right-2 top-2"
           >
@@ -305,6 +314,7 @@ function MapComponent() {
         toggleOpen={setImagePreviewMode}
         record={selectedRecord}
       />
+      <Filter open={filterModalOpen} toggleOpen={toggleFilterMode} />
     </>
   );
 }
