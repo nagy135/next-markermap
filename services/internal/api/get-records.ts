@@ -11,7 +11,7 @@ export default async (
   return await (
     await fetch(
       "/api/records?" +
-        new URLSearchParams(email?.map((e) => ["email", e] ?? []))
+        new URLSearchParams(email.map((e) => ["email", e] ?? []))
     )
   ).json();
 };

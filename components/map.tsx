@@ -33,7 +33,11 @@ const newRecordDataDefault: TNewRecordData = {
 function MapComponent() {
   // hooks {{{
   const queryClient = useQueryClient();
-  const { data: records } = useQuery(["records"], () => getRecords(filters));
+
+  // filter
+  const [filters, setFilters] = useState<TGetRecordsRequest>({ email: [] });
+
+  const { data: records, isLoading } = useQuery(["records", filters], () => getRecords(filters));
   const mutation = useMutation((newRecord: TPostRecordRequest) =>
     postRecord(newRecord)
   );
@@ -64,8 +68,6 @@ function MapComponent() {
   } | null>(null);
   const [image, setImage] = useState<File | null>(null);
 
-  // filter
-  const [filters, setFilters] = useState<TGetRecordsRequest>({});
 
   // imagePreview
   const [imagePreviewMode, setImagePreviewMode] = useState(false);
@@ -95,7 +97,7 @@ function MapComponent() {
     });
   };
 
-  const invalidateRecords = () => queryClient.invalidateQueries(['records']);
+  const invalidateRecords = () => queryClient.invalidateQueries(["records"]);
 
   const toggleFilterMode = (open?: boolean) => {
     setFilterModalOpen(open ?? !filterModalOpen);
@@ -325,7 +327,7 @@ function MapComponent() {
         toggleOpen={toggleFilterMode}
         filters={filters}
         setFilters={setFilters}
-        invalidateRecords={invalidateRecords}
+        filterLoading={isLoading}
       />
     </>
   );
