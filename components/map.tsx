@@ -181,9 +181,9 @@ function MapComponent() {
 
   return (
     <>
-      <div className="absolute right-1 top-1/2 z-50 flex flex-col">
+      <div className="absolute right-1 top-1/2 z-50 flex flex-col items-end">
         <RecordAdder {...{ addingMode, toggleAddingMode }} />
-        <FilterButton open={filterModalOpen} toggleOpen={toggleFilterMode} />
+        <FilterButton toggleOpen={toggleFilterMode} filtersEnabled={!!filters.email.length} />
       </div>
       <Profile />
       {isLoaded ? (

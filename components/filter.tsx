@@ -23,7 +23,7 @@ const Filter: FC<IFilter> = ({
   toggleOpen,
   filters,
   setFilters,
-  filterLoading
+  filterLoading,
 }) => {
   const { data: users } = useQuery(["users"], () => getUsers());
   const modalRef = useRef<HTMLDivElement>(null);
@@ -61,8 +61,7 @@ const Filter: FC<IFilter> = ({
       <div ref={modalRef} className="modal modal-bottom sm:modal-middle">
         <div className="modal-box relative">
           {filterLoading ? (
-            <label className="btn btn-sm animate-spin btn-warning btn-circle absolute left-2 top-2">
-              &#9965;
+            <label className="btn loading btn-sm animate-spin btn-info btn-circle absolute left-2 top-2">
             </label>
           ) : null}
           <label
@@ -75,6 +74,19 @@ const Filter: FC<IFilter> = ({
           <h3 className="font-bold text-lg text-center">Filter</h3>
           {users?.length ? (
             <div>
+              <div key={"wrapper-all"} className="flex my-2">
+                <input
+                  type="checkbox"
+                  name="user-all"
+                  key="user-all"
+                  checked={!filters.email.length}
+                  onChange={() => handleAddEmailFilter(null)}
+                  className="checkbox mr-2"
+                />
+                <label key="label-user-all" htmlFor="user-all">
+                  All
+                </label>
+              </div>
               {users.map((e, i) => {
                 const name = `user-${i}`;
                 return (
@@ -93,19 +105,6 @@ const Filter: FC<IFilter> = ({
                   </div>
                 );
               })}
-              <div key={"wrapper-all"} className="flex my-2">
-                <input
-                  type="checkbox"
-                  name="user-all"
-                  key="user-all"
-                  checked={!filters.email.length}
-                  onChange={() => handleAddEmailFilter(null)}
-                  className="checkbox mr-2"
-                />
-                <label key="label-user-all" htmlFor="user-all">
-                  All
-                </label>
-              </div>
             </div>
           ) : null}
         </div>
@@ -115,17 +114,17 @@ const Filter: FC<IFilter> = ({
 };
 
 interface IFilterButton {
-  open: boolean;
   toggleOpen: (state: boolean) => void;
+  filtersEnabled: boolean;
 }
 
-export const FilterButton: FC<IFilterButton> = ({ open, toggleOpen }) => {
+export const FilterButton: FC<IFilterButton> = ({ toggleOpen, filtersEnabled }) => {
   return (
     <button
-      className={`btn btn-circle m-1 ${open ? "btn-error" : ""}`}
+      className={`btn m-1 ${filtersEnabled ? "btn-error" : ""}`}
       onClick={() => toggleOpen(true)}
     >
-      {open ? "Close" : "Filter"}
+      Filters <br/>{filtersEnabled ? "(active)" : ""}
     </button>
   );
 };
