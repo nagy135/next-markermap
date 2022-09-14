@@ -10,12 +10,11 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      const data: TGetRecordsRequest = {};
+      const data: TGetRecordsRequest = { email: [] };
       if (req.query.email) {
-        const emailArr = Array.isArray(req.query.email)
+        data.email = Array.isArray(req.query.email)
           ? req.query.email
           : [req.query.email];
-        data.email = emailArr;
       }
       return await get(res, data);
     case "POST":
@@ -31,7 +30,7 @@ export default async function handler(
 const get = async (res: NextApiResponse, data: TGetRecordsRequest) => {
   const where: Prisma.RecordWhereInput = {};
 
-  if (data.email) {
+  if (data.email.length) {
     where.userEmail = { in: data.email };
   }
 
