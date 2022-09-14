@@ -14,7 +14,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./Dockerfile.production
+      dockerfile: ./Dockerfile
     volumes:
       - .:/usr/src/app
     ports:
